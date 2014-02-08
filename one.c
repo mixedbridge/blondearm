@@ -1,7 +1,71 @@
+/*
+*	Takes hexadecimal as command line input
+*	Returns input encoded in Base 64
+*/
+
+
 #include <stdio.h>
 #include <stdint.h> // uint8_t
 #include <string.h> // strlen 
 #include <stdlib.h> // realloc
+
+static char encoding_table[] = {'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H',
+                                'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P',
+                                'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X',
+                                'Y', 'Z', 'a', 'b', 'c', 'd', 'e', 'f',
+                                'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n',
+                                'o', 'p', 'q', 'r', 's', 't', 'u', 'v',
+                                'w', 'x', 'y', 'z', '0', '1', '2', '3',
+                                '4', '5', '6', '7', '8', '9', '+', '/'};
+
+/* used to pad output with '=' if input is not multiple of 3
+*  indexed by input_size % 3
+*  each index corresponds to no. of '=' needed to pad
+*/
+static int mod_table[] = {0, 2, 1};
+
+/* Takes binary buffer
+*  returns buffer encoded in b64
+*/
+void *int2b64(const uint8_t *data, 
+			  char **out,
+			  size_t input_size, 
+			  size_t *output_size){
+	
+	/* 4 output chars for each 3 byte block
+	*  size_t is unsigned, no floating point 
+	*  when dividing by 3 the remainder is thrown away
+	*/
+	*output_size = 4 * ((input_size + 2) / 3);
+
+	*out = (char *)malloc(*output_size);
+	if (out == NULL) return NULL;
+
+	int i = 0, j = 0;
+
+	while (i < input_size){
+		size_t octet_a = i < input_size ? data[i++] : 0;
+        size_t octet_b = i < input_size ? data[i++] : 0;
+        size_t octet_c = i < input_size ? data[i++] : 0;
+
+		// make one 24 bit block
+		size_t triple = (octet_a << 0x10) + (octet_b << 0x08) + octet_c;
+		
+		/* process octet 6 bits at a time
+		*  push intended 6 bit block to the right
+		*  AND with 00111111 to keep only lowest 6 bits
+		*  store char that corresponds to value
+		*/
+		(*out)[j++] = encoding_table[(triple >> 3 * 6) & 0x3F];
+        (*out)[j++] = encoding_table[(triple >> 2 * 6) & 0x3F];
+        (*out)[j++] = encoding_table[(triple >> 1 * 6) & 0x3F];
+        (*out)[j++] = encoding_table[(triple >> 0 * 6) & 0x3F];
+	}
+	
+	// pad output if input not multiple of 3 bytes
+	for (i = 0; i < mod_table[input_size % 3]; i++)
+        (*out)[*output_size - 1 - i] = '=';
+}
 
 uint8_t hex2int(char c){
 
@@ -63,6 +127,7 @@ size_t hex2bin(char *input_buffer,
 		bytes_written += 1;
 
 	}
+	return bytes_written;
 }
 
 int main(){
@@ -75,6 +140,10 @@ int main(){
 	uint8_t *output_buffer = NULL;
 	size_t output_buffer_size = 0; 
 
+	// buffer to hold base64 characters generated from above bytes
+	char *base_buffer = NULL;
+	size_t base_buffer_size = 0;
+
 	ssize_t chars_read = -1;
 	size_t bytes_written = 0;
 
@@ -85,13 +154,24 @@ int main(){
 		}
 
 		if (chars_read > 0){
-			printf("In: Size:%zd %s\n", chars_read, input_buffer);
-			bytes_written = hex2bin(input_buffer, &output_buffer, &output_buffer_size);
-			printf("Out: %u\n", output_buffer[0]);
+			//printf("In: Size:%zd %s\n", chars_read, input_buffer);
+			bytes_written = hex2bin(input_buffer, 
+									&output_buffer, 
+									&output_buffer_size);
+
+			//printf("Out: %u\n", output_buffer[0]);
+
+			int2b64(output_buffer, 
+					&base_buffer, 
+					bytes_written, 
+					&base_buffer_size);
+
+			printf("Base64: %s\n", base_buffer);
 		}
 	}
 	
 	free(input_buffer);  // allocated by getline
 	free(output_buffer);
+	free(base_buffer);
 }
 
