@@ -31,11 +31,11 @@ void *int2b64(const uint8_t *data,
 			  char **out,
 			  size_t input_size, 
 			  size_t *output_size){
-	
+
 	/* 4 output chars for each 3 byte block
-	*  size_t is unsigned, no floating point 
-	*  when dividing by 3 the remainder is thrown away
-	*/
+	 *  size_t is unsigned, no floating point 
+	 *  when dividing by 3 the remainder is thrown away
+	 */
 	*output_size = 4 * ((input_size + 2) / 3);
 
 	*out = (char *)malloc(*output_size);
@@ -45,26 +45,26 @@ void *int2b64(const uint8_t *data,
 
 	while (i < input_size){
 		size_t octet_a = i < input_size ? data[i++] : 0;
-        size_t octet_b = i < input_size ? data[i++] : 0;
-        size_t octet_c = i < input_size ? data[i++] : 0;
+		size_t octet_b = i < input_size ? data[i++] : 0;
+		size_t octet_c = i < input_size ? data[i++] : 0;
 
 		// make one 24 bit block
 		size_t triple = (octet_a << 0x10) + (octet_b << 0x08) + octet_c;
-		
+
 		/* process octet 6 bits at a time
-		*  push intended 6 bit block to the right
-		*  AND with 00111111 to keep only lowest 6 bits
-		*  store char that corresponds to value
-		*/
+		 *  push intended 6 bit block to the right
+		 *  AND with 00111111 to keep only lowest 6 bits
+		 *  store char that corresponds to value
+		 */
 		(*out)[j++] = encoding_table[(triple >> 3 * 6) & 0x3F];
-        (*out)[j++] = encoding_table[(triple >> 2 * 6) & 0x3F];
-        (*out)[j++] = encoding_table[(triple >> 1 * 6) & 0x3F];
-        (*out)[j++] = encoding_table[(triple >> 0 * 6) & 0x3F];
+		(*out)[j++] = encoding_table[(triple >> 2 * 6) & 0x3F];
+		(*out)[j++] = encoding_table[(triple >> 1 * 6) & 0x3F];
+		(*out)[j++] = encoding_table[(triple >> 0 * 6) & 0x3F];
 	}
-	
+
 	// pad output if input not multiple of 3 bytes
 	for (i = 0; i < mod_table[input_size % 3]; i++)
-        (*out)[*output_size - 1 - i] = '=';
+		(*out)[*output_size - 1 - i] = '=';
 }
 
 uint8_t hex2int(char c){
@@ -140,7 +140,7 @@ int main(){
 	uint8_t *output_buffer = NULL;
 	size_t output_buffer_size = 0; 
 
-	// buffer to hold base64 characters generated from above bytes
+	// buffer to hold base64 characters generated
 	char *base_buffer = NULL;
 	size_t base_buffer_size = 0;
 
@@ -154,12 +154,9 @@ int main(){
 		}
 
 		if (chars_read > 0){
-			//printf("In: Size:%zd %s\n", chars_read, input_buffer);
 			bytes_written = hex2bin(input_buffer, 
 									&output_buffer, 
 									&output_buffer_size);
-
-			//printf("Out: %u\n", output_buffer[0]);
 
 			int2b64(output_buffer, 
 					&base_buffer, 
