@@ -74,7 +74,7 @@ size_t hex2bin(char *input_buffer,
 
 int score(uint8_t **buffer, int key){
 
-	char bytes[34];	//given buffer resolves to 24 bytes
+	char *bytes = malloc(34);	//given buffer resolves to 34 bytes
 	int i = 0;
 	int score = 0;
 	
@@ -82,33 +82,34 @@ int score(uint8_t **buffer, int key){
 		bytes[i] = (*buffer)[i] ^ key;
 
 		switch(bytes[i]){
-			case 'E': 
-			case 'e':
-				score += 1;
-				break;
-			case 'T': 
-			case 't':
-				score += 1;
-				break;
-			case 'A': 
-			case 'a':
-				score += 1;
-				break;
-			case 'O':
-		   	case 'o':
-				score += 1;
-				break;
-			case 'I':
-		   	case 'i':
-				score += 1;
-				break;
-			case 'N': 
-			case 'n':
+			case 'E': case 'e': case 'T': case 't':
+			case 'A': case 'a': case 'O': case 'o':
+			case 'I': case 'i': case 'N': case 'n':
 				score += 1;
 				break;
 		}
 	}
+	free(bytes);
 	return score;
+}
+
+int findkey(uint8_t **buffer){
+
+	int	*points = malloc(200);
+	int i = 0;
+	int max = 0;		//maxscore
+	int maxindex = 0;	//index of character with max score
+
+	for (i = 0; i < 127; i++){
+		points[i] = score(&(*buffer), i);
+		if (points[i] > max){
+			max = points[i];
+			maxindex = i;
+		}
+	}
+	printf("Score: %d, Key: %c\n", max, maxindex);
+	free(points);
+	return maxindex;
 }
 
 int main(){
@@ -136,27 +137,14 @@ int main(){
 		}
 	}
 
-	int	*points = malloc(200);
 	int i = 0;
-	int max = 0;
-	int maxindex = 0;
-
-	for (i = 0; i < 127; i++){
-		points[i] = score(&output, i);
-		if (points[i] > max){
-			max = points[i];
-			maxindex = i;
-		}
-	}
-	printf("Score: %d, Key: %c\n", max, maxindex);
-
+	int key = findkey(&output);
 
 	for (i = 0; i < bytes_written; i++){
-		printf("%c", output[i] ^ maxindex);
+		printf("%c", output[i] ^ key);
 	}
 	printf("\n");
 
 	free(input);  // allocated by getline
 	free(output);
-	free(points);
 }
