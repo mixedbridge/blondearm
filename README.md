@@ -5,16 +5,22 @@ blondearm
 
 ###base64tohex.c
 
+* Converts base64 strings from stdin to hexadecimal.
+
 ###findxor.c
 
-* input file: key.txt
+* Detect byte used in single-byte XOR cypher.
+* Input file: key.txt
 
-sixtyxor.c
+###sixtyxor.c
 
-* input file: sixtyxor_input.txt
+* Detect string encrypted with single-character XOR.
+* Input file contains 327 strings in hexadecimal.
+* Input file: sixtyxor_input.txt
 
 ###xorsum.c
 
-* input file tobexored.txt
+* Takes two equal-length buffers and produces their XOR combination.
+* Input file tobexored.txt
 
 
