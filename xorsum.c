@@ -1,6 +1,6 @@
 /*
-*	Takes 2 buffers of hexadecimal as command line input
-*	Returns XOR sum of input
+*	Takes 2 buffers of hexadecimal from tobexored.txt.
+*	Returns XOR sum of input.
 */
 
 
