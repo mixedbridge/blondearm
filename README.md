@@ -14,7 +14,7 @@ blondearm
 
 ###sixtyxor.c
 
-* Detect string encrypted with single-character XOR.
+* Detect a sixty character string encrypted with single-character XOR.
 * Input file contains 327 strings in hexadecimal.
 * Input file: sixtyxor_input.txt
 
