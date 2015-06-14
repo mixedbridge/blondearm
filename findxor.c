@@ -1,6 +1,10 @@
 /*
-*	Takes a string of hexadecimal
-*   Xors it against a single character and finds the message
+*	Takes a string of hexadecimal in key.txt.
+*   String is XOR-ed against all ASCII characters.
+*   The result is tested using character frequency analysis 
+*   to find the string most likely in English.
+*
+*   The message in the hexadecimal string is decrypted and printed to stdout.
 */
 
 
