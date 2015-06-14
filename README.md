@@ -21,6 +21,6 @@ blondearm
 ###xorsum.c
 
 * Takes two equal-length buffers and produces their XOR combination.
-* Input file tobexored.txt
+* Input file: tobexored.txt
 
 
