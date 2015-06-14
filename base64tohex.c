@@ -1,3 +1,10 @@
+/*	
+ *	Converts base64 input from stdin to hexadecimal.
+ *
+ *	Code from here repurposed: 
+ *	http://stackoverflow.com/questions/342409/how-do-i-base64-encode-decode-in-c
+ *
+*/
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
